@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表单</title>
+    <script src="../dist/vue.js"></script>
+</head>
+<body>
+<!--
+    2016.1.25 00:10 beijing
+-->
+
+<!--
+    Text
+-->
+<div id="app1">
+    <p>Message is {{message}}</p>
+    <input v-model="message" number debounce="1000"  placeholder="请输入...">
+</div>
+<script>
+    new Vue({
+        el:'#app1',
+        data:{
+            message:''
+        }
+    })
+</script>
+<!--
+    Checkbox
+-->
+<div id="app2">
+    <input type="checkbox" id="checkbox" v-model="checked">
+    <label for="checkbox">{{ checked }}</label>
+</div>
+<script>
+    new Vue({
+        el:'#app2',
+        data:{
+            checked:!this.checked
+        }
+    })
+</script>
+
+<div id="app3">
+    <input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
+    <label for="jack">Jack</label>
+    <input type="checkbox" id="john" value="John" v-model="checkedNames">
+    <label for="john">John</label>
+    <input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
+    <label for="mike">Mike</label>
+    <br>
+    <span>Checked names: {{ checkedNames | json }}</span>
+</div>
+<script>
+    new Vue({
+        el:'#app3',
+        data:{
+            checkedNames:[]
+        }
+    })
+</script>
+
+<!--
+    Radio
+-->
+<div id="app4">
+    <input type="radio" id="one" value="One" v-model="picked">
+    <label for="one">One</label>
+    <br>
+    <input type="radio" id="two" value="Two" v-model="picked">
+    <label for="two">Two</label>
+    <input type="radio" id="three" value="Three" v-model="picked">
+    <label for="three">Three</label>
+    <input type="radio" id="four" value="Four" v-model="picked">
+    <label for="four">Four</label>
+    <br>
+    <span>Picked: {{ picked }}</span>
+</div>
+<script>
+    new Vue({
+        el:'#app4',
+        data:{
+            picked:'Four'
+        }
+    })
+</script>
+<!--
+    Select
+-->
+
+    <div id="app5">
+        <select v-model="selected">
+            <option /*selected*/> A</option>
+            <option>B</option>
+            <option>C</option>
+        </select>
+        <span>Selected: {{ selected }}</span>
+    </div>
+    <script>
+        new Vue({
+            el:'#app5',
+            data:{
+                selected:'B' // 由数据 映射DOM
+            }
+        })
+    </script>
+
+<!--
+    动态选项，用 v-for 渲染：
+-->
+<div id="app6">
+    <select v-model="selected">
+        <option v-for="option in options" v-bind:value="option.value">
+            {{ option.text }}
+        </option>
+    </select>
+    <span>Selected: {{ selected }}</span>
+</div>
+<script>
+    new Vue({
+        el:'#app6',
+        data:{
+            selected:'D',
+            options:[
+                {
+                    text:'电视剧',
+                    value:'A'
+                },
+                {
+                    text:'电冰箱',
+                    value:'B'
+                },
+                {
+                    text:'电风扇',
+                    value:'C'
+                },
+                {
+                    text:'空调',
+                    value:'D'
+                }
+            ]
+        }
+    })
+</script>
+
+<div id="app7">
+    <!--<input type="checkbox" v-model="toggle">-->
+    <input
+            type="checkbox"
+            v-model="toggle"
+            v-bind:true-value="a"
+            v-bind:false-value="b">
+    <p>{{toggle}}</p>
+</div>
+<script>
+    var vm = new Vue({
+        el:'#app7',
+        data:{
+            toggle:!this.toggle,
+            'true-value':'a',
+            'false-value':'b'
+        }
+    });
+
+    console.log(vm.toggle);
+</script>
+</body>
+</html>

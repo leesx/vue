@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表单</title>
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="../dist/vue.js"></script>
+</head>
+<body>
+<div id="app1"></div>
+<script>
+    var data = {
+        a : 1
+    };
+    var vm = new Vue({
+        el : '#app1',
+        data : data
+    });
+    console.log(data.a === vm.a);
+
+    vm.a = 3;
+    console.log(data.a);
+
+    data.a = 5;
+    console.log(data.a);
+    console.log(vm.$el)
+    console.log(vm.$data);
+    vm.a = 'change'
+    vm.$watch('a', function(newVal, oldVal){
+        console.log(newVal, oldVal);
+    })
+</script>
+<div id="app2">
+    {{msg}}
+    <p>{{*msg}}</p>
+    <p>{{tpl}}</p>
+    {{{tpl}}}
+    <!--
+        这些表达式将在所属的 Vue 实例的作用域内计算。
+        一个限制是每个绑定只能包含单个表达式
+    -->
+    <p>{{ok? '可以':'不可以'}}</p>
+    <p>{{msg.split('').reverse().join('')}}</p>
+    <p>{{num+1}}</p>
+    <p v-if="greeting">你好啊</p>
+    <button >切换</button>
+    <p>
+        <a v-bind:href="url" :title="title" @click="stop($event)">百度一下</a>
+    </p>
+    <p>{{newNum}}</p>
+    <p>{{newStr}}</p>
+</div>
+<script>
+    var vm2 = new Vue({
+        el : '#app2',
+        data : {
+            greeting:1,
+            num : 2,
+            ok : true,
+            url:'www.baidu.com',
+            title:'你好啊百度',
+            msg : '2016我要结婚',
+            tpl : '<h1 style="color:#f00;">你好</h1>'
+        },
+        methods:{
+            show:function(){
+                this.greeting = !this.greeting;
+            },
+            stop:function(e){
+                e.preventDefault();
+            }
+        },
+        computed:{
+            newNum:function(){
+                return this.num+1;
+            },
+            newStr:function(){
+                return this.title+'2016'
+            }
+        }
+    });
+
+    vm2.msg = '姑娘你在哪';
+
+    // 注册 partial
+    Vue.partial('my-partial', '<p>This is a partial! {{msg}}</p>')
+</script>
+<div>
+    <!-- 静态 partial -->
+    <partial name="my-partial"></partial>
+</div>
+
+<script>
+    /*
+    * Vue.js 提供了一个方法 $watch，它用于观察 Vue 实例上的数据变动。当一些数据需要根据其它数据变化时，
+    * $watch 很诱人 —— 特别是如果你来自 AngularJS。
+    * 不过，通常更好的办法是使用计算属性而不是一个命令式的 $watch 回调。
+    * 考虑下面例子：
+    * */
+    var vm3 = new Vue({
+        data:{
+            firstName:'li',
+            lastName:'shangxi',
+            fullName:''
+        }
+    });
+    vm3.$watch('firstName',function(val){
+        this.fullName =  val + ' ' + this.lastName;
+    });
+    vm3.$watch('lastName',function(val){
+        this.fullName = this.firstName + ' ' + val;
+    });
+
+    var vm4 = new Vue({
+        data:{
+            firstName:'lee',
+            lastName:'shangxi'
+        },
+        /*computed:{
+            fullName:function(){
+                return this.firstName +' '+ this.lastName;
+            }
+        }*/
+        computed:{
+            fullName:{
+                //setter
+                set:function(newVal){
+                    var names = newVal.split(' ');
+                    this.firstName = names[0];
+                    this.lastName = names[names.length-1]
+                },
+                //getter
+                get:function(){
+                    return this.firstName + ' ' +this.lastName;
+                }
+            }
+        }
+    })
+    /*
+    * 现在在调用 vm.fullName = 'John Doe' 时，setter 会被调用，
+    * vm.firstName 和 vm.lastName 也会有相应更新。
+    * */
+</script>
+<style>
+    .text{
+        color:#f00;
+        font-size:26px;
+    }
+    .text2{
+        color:#42b983;
+        font-size:18px;
+    }
+</style>
+<div id="app5">
+    <p class="text" v-bind:class="{'text2':isA,'text3':isB}">2016两会会开些什么呢</p>
+    <p class="text" v-bind:class="classObj">2016两会会开些什么呢</p>
+    <p class="text" v-bind:class="[classA,classObj.text2 ? classB : '']">2016两会会开些什么呢</p>
+    <p class="text" v-bind:style="{color:mycolor,fontSize:myFontSize}">2016两会会开些什么呢</p>
+    <p class="text" v-bind:style="[styleObj]">2016两会会开些什么呢</p>
+    <p class="text" v-bind:style="[styleObj,styleObj2]">2016两会会开些什么呢</p>
+</div>
+<script>
+    new Vue({
+        el:'#app5',
+        /*data:{
+            isA:true,
+            isB:false
+        }*/
+        data:{
+            classObj:{
+                text2:true,
+                text3:false
+            },
+            mycolor:'green',
+            myFontSize:'28px',
+            classA:'textA',
+            classB:'textB',
+            styleObj:{
+                color:'green',
+                fontSize:'28px'
+            },
+            styleObj2:{
+                color:'#f60',
+                fontSize:'32px',
+                padding:'10px',
+                textAligin:'center',
+                backgroundColor:'#ccc',
+                borderRadius:'10px',
+                boxShadow:'2px 2px 3px #ccc'
+            }
+        }
+    })
+</script>
+<div id="app6">
+    <template v-if="ok == '0'">
+        <p>这是ok</p>
+        <p>我来用友超客两个月了</p>
+    </template>
+    <template v-else>
+        <p>这是NO</p>
+        <p>2016我在用友超客待了两个月了</p>
+    </template>
+    <template v-if="ok2">
+        <p>ok2</p>
+    </template>
+    <template v-else>
+        <p>ok2 false</p>
+    </template>
+    <div v-show="toggle" transition="fade">这是一个显示隐藏的命令</div>
+    <div v-else>显示出来了</div>
+</div>
+<script>
+    var vm6 = new Vue({
+        el:'#app6',
+        data:{
+            ok:'ok',
+            ok2:2,
+            toggle:true
+        }
+    })
+
+    /*
+    * 一般来说，v-if 有更高的切换消耗而 v-show 有更高的初始渲染消耗。
+    * 因此，如果需要频繁切换 v-show 较好，如果在运行时条件不大可能改变 v-if 较好。
+    * */
+
+    Vue.transition('fade', {
+        css: false,
+        enter: function (el, done) {
+            // 元素已被插入 DOM
+            // 在动画结束后调用 done
+            $(el)
+                    .css('opacity', 0)
+                    .animate({ opacity: 1 }, 1000, done)
+        },
+        enterCancelled: function (el) {
+            $(el).stop()
+        },
+        leave: function (el, done) {
+            // 与 enter 相同
+            $(el).animate({ opacity: 0 }, 1000, done)
+        },
+        leaveCancelled: function (el) {
+            $(el).stop()
+        }
+    })
+</script>
+
+<div id="app7">
+    <input v-model="query">
+    <ul>
+        <li v-for="item in list | filterBy query"
+                transition="staggered"
+                stagger="100">
+            {{item.msg}}
+        </li>
+    </ul>
+</div>
+<style>
+    ul {
+        padding-left: 0;
+        font-family: Helvetica, Arial, sans-serif;
+    }
+    .staggered-transition {
+        transition: all .5s ease;
+        overflow: hidden;
+        margin: 0;
+        height: 20px;
+    }
+    .staggered-enter, .staggered-leave {
+        opacity: 0;
+        height: 0;
+    }
+</style>
+<script>
+    new Vue({
+        el: '#app7',
+        data: {
+            query: '',
+            list: [
+                { msg: 'Bruce Lee' },
+                { msg: 'Jackie Chan' },
+                { msg: 'Chuck Norris' },
+                { msg: 'Jet Li' },
+                { msg: 'Kung Fury' }
+            ]
+        }
+    })
+</script>
+<div id="app8">
+    <p><span v-show="show" transition="bounce">Look at me!</span></p>
+    <button @click="toggle">点击动画</button>
+</div>
+<style>
+    .bounce-transition {
+        display: inline-block; /* 否则 scale 动画不起作用 */
+    }
+    .bounce-enter {
+        animation: bounce-in .5s;
+    }
+    .bounce-leave {
+        animation: bounce-out .5s;
+    }
+    @keyframes bounce-in {
+        0% {
+            transform: scale(0);
+        }
+        50% {
+            transform: scale(1.5);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    @keyframes bounce-out {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.5);
+        }
+        100% {
+            transform: scale(0);
+        }
+    }
+</style>
+<script>
+    new Vue({
+        el:'#app8',
+        data:{
+            show:true
+        },
+        methods:{
+            toggle:function(){
+                this.show = !this.show;
+            }
+        }
+    })
+</script>
+<div id="app9">
+    <p transition="fade" v-show="show">
+        央广网北京2月28日消息（记者何源）据中国之声《央广新闻》报道，从1929年开始至今，奥斯卡颁奖典礼已经成为国际影坛最重要的年度盛事，也是众多明星和广大影迷们的盛大狂欢。去年有超过220个国家的媒体参与了奥斯卡的转播和报道。今年的奥斯卡颁奖礼，将在美国时间2月28号、北京时间29号早晨，在好莱坞拉开帷幕。
+    </p>
+    <button @click="toggle">点击我</button>
+</div>
+<script>
+    new Vue({
+        el:'#app9',
+        data:{
+            show:true
+        },
+        methods:{
+            toggle:function(){
+                this.show = !this.show;
+            }
+        }
+    })
+
+    Vue.transition('fade', {
+        css: false,
+        enter: function (el, done) {
+            // 元素已被插入 DOM
+            // 在动画结束后调用 done
+            $(el)
+                    .css('opacity', 0)
+                    .animate({ opacity: 1 }, 1000, done)
+        },
+        enterCancelled: function (el) {
+            $(el).stop()
+        },
+        leave: function (el, done) {
+            // 与 enter 相同
+            console.log(done)
+            $(el).animate({ opacity: 0 }, 1000, done)
+        },
+        leaveCancelled: function (el) {
+            $(el).stop()
+        }
+    })
+</script>
+<!--方法与事件处理器-->
+
+<div id="app10">
+    <button @click="greet">greeting</button>
+    <a href="#" @click.prevent="say('2016',$event)">2016</a>
+    <button @click.stop.prevent="say('你好',$event)">你好</button>
+    <form action="www.baidu.com">
+        <input type="submit" @click.prevent="say('提交数据')">
+    </form>
+    <p v-text="message | reverse"></p>
+    <p v-text="message | wrap '开始' '结束' "></p>
+
+    <input v-model="userInput">
+    <span>{{msg | concat userInput}}</span>
+</div>
+<script>
+
+</script>
+<!-- 添加事件侦听器时使用 capture 模式 -->
+<!--<div v-on:click.capture="doThis">...</div>-->
+
+<!-- 只当事件在该元素本身（而不是子元素）触发时触发回调 -->
+<!--<div v-on:click.self="doThat">...</div>-->
+
+<!-- 同上 -->
+<!--<input v-on:keyup.enter="submit">-->
+
+<!-- 缩写语法 -->
+<!--<input @keyup.enter="submit">-->
+<!--
+全部的按键别名：
+
+enter
+tab
+delete
+esc
+space
+up
+down
+left
+right
+-->
+<script>
+    /*
+    * 修饰符 .
+    * .stop
+    * .prevent
+    * .capture
+    * .self
+    * .13 == .enter
+    *
+    * */
+
+    //过滤器的声明必须写在实例的前面
+    Vue.filter('reverse', function (value) {
+        console.log(value);
+        return value.split('').reverse().join('')
+    })
+    Vue.filter('wrap', function (value, begin, end) {
+        return begin + value + end
+    })
+
+    Vue.filter('concat', function (value, input) {
+        // `input` === `this.userInput`
+        return value + input
+    })
+    new Vue({
+        el:'#app10',
+        data:{
+            userInput:'',
+            message:'this is msg',
+            hello:' Vue',
+            msg:'你输入的信息是:'
+        },
+        methods:{
+            greet:function(ev){
+                alert('hello'+this.hello);
+                alert(ev.target.tagName)
+            },
+            say:function(msg,ev){
+                alert(msg);
+                alert(ev.target.tagName)
+            }
+        }
+    })
+
+
+</script>
+</body>
+</html>

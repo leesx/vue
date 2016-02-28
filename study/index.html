@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../dist/vue.js"></script>
+</head>
+<body>
+<div id="app">
+    {{ message }}
+    <input type="text" v-model="message">
+</div>
+
+<div id="app2">
+    <ul>
+        <li v-for="key in list">{{key.name}}</li>
+    </ul>
+</div>
+<script>
+    /*
+    * 2016-1-25 00:07
+    * 实例1
+    * */
+    new Vue({
+        el:'#app',
+        data:{
+            message:'hello Mr. Lee'
+        }
+    });
+    /*
+    * 实例2
+    * */
+    new Vue({
+        el:'#app2',
+        data:{
+            list:[
+                {
+                    name:'张三'
+                },
+                {
+                    name:'李四'
+                },
+                {
+                    name:'王五'
+                },
+                {
+                    name:'神六'
+                }
+            ]
+        }
+    })
+
+</script>
+<div id="app3">
+    <p>{{ message }}</p>
+    <!--
+        v-on:click ====> 简写成  @click=""
+    -->
+    <button @click="reverseMessage">Reverse Message</button>
+</div>
+<script>
+    /*
+     * 实例3
+     * */
+    new Vue({
+        el:'#app3',
+        data:{
+            message:'Hello,Mr.Lee'
+        },
+        methods:{
+            reverseMessage:function(){
+                this.message = this.message.split('').reverse().join('');
+                console.log(this);// this ==> 指向的是Vue当前实例
+            }
+        }
+    })
+</script>
+
+<!--<div id="app4">
+    <input v-model="newTodo" @keyup.enter="addTodo">
+    <ul>
+        <li v-for="todo in todos">
+            <span>{{ todo.text }}</span>
+            <button @click="removeTodo($index)">X</button>
+        </li>
+    </ul>
+</div>-->
+<div id="app4">
+    <input type="text" v-model="newTodo" @keyup.enter="addTodo()" />
+    <ul>
+        <li v-for="key in todos">{{key.text}} <button @click="removeTodo($index)">X</button></li>
+    </ul>
+</div>
+<script>
+    new Vue({
+        el:'#app4',
+        data:{
+            //数据 挂在 当前Vue对象上
+            newTodo:'',
+            todos:[{
+                text:'2016来了,干点什么呢'
+            }]
+        },
+        methods:{
+            //方法 挂在 当前Vue对象上
+            addTodo:function(){
+                var text = this.newTodo.trim();
+                if(text){
+                    this.todos.push({text:text});
+                    this.newTodo = '';
+                }
+            },
+            removeTodo:function(index){
+                this.todos.splice(index,1);
+            }
+        }
+    })
+</script>
+</body>
+</html>
